@@ -10,11 +10,9 @@ if (!defined('SITE_ROOT')) {
 	define('SITE_ROOT', $ans);
 }
 
-defined('LIB_PATH')  ? null : define('LIB_PATH', SITE_ROOT . DS . 'includes');
-defined('smtp_user') ? null : define('smtp_user', "fm@mdr.com");
-defined('smtp_pass') ? null : define('smtp_pass', "grove33325");
-defined('magic_quotes_active') ? null : define('magic_quotes_active', get_magic_quotes_gpc());
-defined('real_escape_string_exists') ? null : define('real_escape_string_exists', function_exists( "mysqli_real_escape_string" ));
+if(!defined('LIB_PATH'))                  define('LIB_PATH', SITE_ROOT . DS . 'includes');
+if(!defined('magic_quotes_active'))       define('magic_quotes_active', get_magic_quotes_gpc());
+if(!defined('real_escape_string_exists')) define('real_escape_string_exists', function_exists( "mysqli_real_escape_string" ));
 
 //echo LIB_PATH.DS."functions.php<br />";
 require_once(LIB_PATH.DS.'functions.php');
