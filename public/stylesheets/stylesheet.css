@@ -1,0 +1,21 @@
+@charset "utf-8";
+/* CSS Document */
+
+body  { background-color: #000; font: 16px Helvetica, Arial; color: #FFC; }
+label { margin: 5px 5px 0 10px; }
+h2    { text-decoration: underline; }
+input { background-color: #FFC; }
+a { color:#66FFFF; }
+th, td {padding-bottom:16px; }
+#main { margin:50px auto; width:600px; background-color:#333333; }
+.title {font-size: 24px; font-weight:bold; text-decoration:underline;}
+input, button { vertical-align:middle; }
+#wrapper { 
+	background-color: #000; 
+	color:#EEEEEE; 
+	margin:20px auto; 
+	width:780px; 
+	font-size:18px; 
+	font-family:"Courier New", Courier, monospace;  
+}
+.no-border { border-width: 0 }
