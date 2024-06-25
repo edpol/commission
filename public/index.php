@@ -5,7 +5,7 @@ if (isset($_POST['username'])) {
 }
 	require_once ('../includes/initialize.php');
 
-//if (isset($_POST['submit'])) {echo 'SET <br />';} else {echo 'NOT set <br />';}
+	//if (isset($_POST['submit'])) {echo 'SET <br />';} else {echo 'NOT set <br />';}
 
 
 	$username = '';
@@ -22,7 +22,7 @@ if (isset($_POST['username'])) {
   
 		if (empty($errors)) {
 			// Attempt Login
-//do errors get destroyed
+			//do errors get destroyed
 			$username = $_POST['username'];
 			$password = $_POST['password'];
 			$found_user = $mysqlidb->attempt_login($username, $password);

@@ -34,9 +34,9 @@
 	/*
 	 * output to a csv file
 	 */
-	function print_selected ($stmt,$db,$csvfile) {
+	function print_selected ($rows, $db, $csvfile) {
 		$print_heading = true;
-		while( $row = $db->fetch_array($stmt) ) {
+		foreach($rows as $row) {
 			$line = build_string($row);
 			if ($print_heading) {
 				writeln($csvfile, $line['header']);
@@ -110,10 +110,9 @@
 		}
 	}
 
-/*
- *	Report
- */
-
+	/*
+	 *	Report
+	 */
 	function writeln ($myfile, $line) {
 			global $line_count;
 			fwrite($myfile, $line . PHP_EOL);
@@ -123,63 +122,61 @@
 	/*
 	 * output report the word format file
 	 */
-	function print_report($db,$count) {
+	function print_report($db, $rows, $count) {
 		global $line_count, $previous_SALESPERSON, $max_lines, $commission_total, $sales_total;
 
 		$file = getcwd()."/temp/report.doc";
-//		echo "dir : " . __DIR__ . "<br />";
-//		echo "File : " . $file . "<br />";
+		//echo "dir : " . __DIR__ . "<br />";
+		//echo "File : " . $file . "<br />";
 
 		$sql = "select * ";
 		$sql .= "from #commission_table order by sales_id, inv_date ";
-		$stmt = $db->query($sql);
+		//$stmt = $db->query($sql);
 
 		$count == 1 ? $access = "w" : $access = "a";
 		$myfile = fopen($file, $access) or die("Unable to open file {$file}!");
 		$line_count = 0;
 		$previous_SALESPERSON = '';
 
-		while( $row = $db->fetch_array($stmt) ) {
+		foreach($rows as $row) {
 			//	Next Sales Person
-			if (($row['SALES_ID'] <> $previous_SALESPERSON) && ($line_count>0)){
+			if (($row['Sales ID'] <> $previous_SALESPERSON) && ($line_count>0)){
 				print_footer("A",$db,$myfile,true);
 				$commission_total = 0;
 				$sales_total = 0;
 			}
-            $previous_SALESPERSON = $row['SALES_ID'];
-			$sp = $row["SALESPERSON"];
+			$previous_SALESPERSON = $row['Sales ID'];
+			$sp = $row["Sales Person"];
 			if ($line_count<=1) {print_header($myfile,$sp);}
 			print_row($myfile, $row);
 			if ($line_count>=$max_lines) {print_footer("B",$db,$myfile);}
 		}
 		if ($line_count<$max_lines) {print_footer("C",$db,$myfile,true);}
-		print_totals($db,$myfile);
 		if ($count == 2) {fclose($myfile);}	// if you add another company, this has to be changed
 	}
 
 
-	function print_totals($db,$myfile) {
+	function print_totals($db, $rows, $myfile) {
 		global $page_count, $company, $start_date, $end_date;
 		if ($page_count>0) writeln($myfile,"\f"); //chr(12)
 		writeln($myfile,"                        Commission Report for {$company}");
 		writeln($myfile,"Run Date : " . date("m/d/Y"));
 		writeln($myfile,"Date Range : {$start_date} to {$end_date}");
-		$sql = "select * from #totals order by sales_id ";
-		$stmt = $db->query($sql);
+		//$stmt = $db->query($sql . "order by sales_id group by sales_id ");
 
 		writeln($myfile, "");
 		$line = "Sales ID  TOTAL SALES  COMMISSION  SALESPERSON";
 		writeln($myfile, $line);
 		$commission_total = 0;
 		$sales_total = 0;
-		while( $row = $db->fetch_array($stmt) ) {
+		foreach($rows as $row) {
 			$line  = sprintf('  %3s '  , $row['SALES_ID']);
 			$line .= sprintf('%13.2f ' , $row['TOTAL_SALES']);
 			$line .= sprintf('%11.2f ' , $row['COMMISSION']);
 			$line .= "   " . $row["SALESPERSON"];
 			writeln($myfile, $line);
 			$commission_total += $row['COMMISSION']; 
-            $sales_total += $row['TOTAL_SALES'];
+			$sales_total += $row['TOTAL_SALES'];
 		}
 		$line = str_repeat(" ",10) . sprintf('%9.2f ' , $sales_total) . ' ' . sprintf('%10.2f ' , $commission_total);
 		writeln($myfile, $line);
@@ -188,19 +185,19 @@
 
 	function print_row($myfile,$row) {
 		global $commission_total, $commission_page, $sales_total, $sales_page;
-		$line  = sprintf('%7d '   , $row['CUSTNUM']);
-		$line .= sprintf('%6d '   , $row['ORDERNO']);
-		$line .= sprintf('%7.2f ' , $row['MERCH']);
-//		$line .= sprintf('%4s '   , $row['SALES_ID']); 
-		$line .= sprintf(' %s '   , $row['INV_DATE']);
-		$line .= sprintf('%5.1f%%', $row['RATE']);
-		$line .= sprintf('%7.2f ' , $row['COMMISSION']);
-		$line .= substr($row['NAME'],0,35); 
+		$line  = sprintf('%7d '   , $row['Cust ID']);
+		$line .= sprintf('%6d '   , $row['Order']);
+		$line .= sprintf('%7.2f ' , $row['Merch']);
+		//$line .= sprintf('%4s '   , $row['SALES_ID']); 
+		$line .= sprintf(' %s '   , $row['Paid']);
+		$line .= sprintf('%5.1f%%', $row['Rate']);
+		$line .= sprintf('%7.2f ' , $row['Comm']);
+		$line .= substr($row['Name'],0,35); 
 		writeln($myfile, $line);
-		$commission_page  = $commission_page  + $row['COMMISSION'];
-		$commission_total = $commission_total + $row['COMMISSION'];
-        $sales_total += $row['MERCH'];
-        $sales_page  += $row['MERCH'];
+		$commission_page  = $commission_page  + $row['Comm'];
+		$commission_total = $commission_total + $row['Comm'];
+		$sales_total += $row['Merch'];
+		$sales_page  += $row['Merch'];
 	}
 
 	function print_header($myfile, $name) {
@@ -227,22 +224,17 @@ sales_id,Total Sales,Commission,SALESPERSON
 	function print_footer($flag,$db,$myfile,$print_total=false) {
 		global $page_count, $line_count, $max_lines, $previous_SALESPERSON, $commission_page, $commission_total, $sales_total, $sales_page;
 
-//print totals 
-/*
-		$sql = "select * from #totals where sales_id='{$previous_SALESPERSON}' ";
-		$stmt1 = $db->query($sql);
-		$row1 = $db->fetch_array($stmt1);
-		writeln($myfile, sprintf("%44.2f " ,$row1['COMMISSION']));
-*/
-		$line = sprintf("%22.2f ", $sales_page) . sprintf("%23.2f ", $commission_page);
-
-        writeln($myfile, $line);
-
-        $commission_page = 0.00;
-        $sales_page = 0.00;
+//print totals
+		$line = sprintf("%22.2f ", $sales_page) . str_repeat(" ",16) . sprintf("%22.2f ", $commission_page);
+		
+		writeln($myfile, $line);
+		
+		$commission_page = 0.00;
+		$sales_page = 0.00;
+		
 		if ($print_total) {
-			$line = sprintf("Grand Total %10.2f ", $sales_total) . " " . sprintf("%22.2f ", $commission_total);
-//			$line.=$flag;
+			$line = sprintf("Grand Total %10.2f ", $sales_total) . str_repeat(" ",16) . sprintf("%22.2f ", $commission_total);
+			//$line.=$flag;
 			writeln($myfile, $line);
 		}
 		page_number($myfile);
@@ -250,13 +242,13 @@ sales_id,Total Sales,Commission,SALESPERSON
 
 	function page_number($myfile) {
 		global $max_lines, $line_count, $page_count;
-// Add Blank lines
+		// Add Blank lines
 		for($i = $max_lines-$line_count; $i >= 1; $i--) {
 			writeln($myfile,"");
 		}
 		$page_count++;
 		$line  = str_repeat(" ",30) . "Page {$page_count}";
-//		$line .= "/{$line_count}";
+		//$line .= "/{$line_count}";
 		writeln($myfile, $line);
 		$line_count=0;
 	}

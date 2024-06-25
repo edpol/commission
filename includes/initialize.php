@@ -1,4 +1,9 @@
 <?php
+
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
 // (\ for Windows, / for Unix)
 defined('DS') ? null : define('DS', DIRECTORY_SEPARATOR);
 
@@ -11,7 +16,6 @@ if (!defined('SITE_ROOT')) {
 }
 
 if(!defined('LIB_PATH'))                  define('LIB_PATH', SITE_ROOT . DS . 'includes');
-if(!defined('magic_quotes_active'))       define('magic_quotes_active', get_magic_quotes_gpc());
 if(!defined('real_escape_string_exists')) define('real_escape_string_exists', function_exists( "mysqli_real_escape_string" ));
 
 //echo LIB_PATH.DS."functions.php<br />";
