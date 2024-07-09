@@ -160,8 +160,8 @@
 		global $page_count, $company, $start_date, $end_date;
 		if ($page_count>0) writeln($myfile,"\f"); //chr(12)
 		writeln($myfile,"                        Commission Report for {$company}");
-		writeln($myfile,"Run Date : " . date("m/d/Y"));
-		writeln($myfile,"Date Range : {$start_date} to {$end_date}");
+		writeln($myfile,"Run Date: " . date("m/d/Y"));
+		writeln($myfile,"Date Range: {$start_date} to {$end_date}");
 		//$stmt = $db->query($sql . "order by sales_id group by sales_id ");
 
 		writeln($myfile, "");
@@ -205,9 +205,9 @@
 
 		if ($page_count>0) fwrite($myfile,"\f"); //chr(12)
 		writeln($myfile,"                          Commission Report for {$company}");
-		writeln($myfile,"Run Date : " . date("m/d/Y"));
-		writeln($myfile,"Date Range : {$start_date} to {$end_date}");
-		writeln($myfile,"Sales Person : " . $previous_SALESPERSON . ", " . $name);
+		writeln($myfile,"Run Date: " . date("m/d/Y"));
+		writeln($myfile,"Date Range: {$start_date} to {$end_date}");
+		writeln($myfile,"Sales Person: " . $previous_SALESPERSON . ", " . $name);
 		writeln($myfile,"");
 		writeln($myfile,"CUSTNUM ORDER#   MERCH  INV_DATE   RATE   COMM NAME ");
 	}
@@ -225,7 +225,7 @@ sales_id,Total Sales,Commission,SALESPERSON
 		global $page_count, $line_count, $max_lines, $previous_SALESPERSON, $commission_page, $commission_total, $sales_total, $sales_page;
 
 //print totals
-		$line = sprintf("%22.2f ", $sales_page) . str_repeat(" ",16) . sprintf("%22.2f ", $commission_page);
+		$line = sprintf("%22.2f ", $sales_page) . " " . sprintf("%22.2f ", $commission_page);
 		
 		writeln($myfile, $line);
 		
@@ -233,7 +233,7 @@ sales_id,Total Sales,Commission,SALESPERSON
 		$sales_page = 0.00;
 		
 		if ($print_total) {
-			$line = sprintf("Grand Total %10.2f ", $sales_total) . str_repeat(" ",16) . sprintf("%22.2f ", $commission_total);
+			$line = sprintf("Grand Total %10.2f ", $sales_total) . " " . sprintf("%22.2f ", $commission_total);
 			//$line.=$flag;
 			writeln($myfile, $line);
 		}

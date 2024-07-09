@@ -87,11 +87,10 @@
 			 *	select the invoices from the given date range
 			 */
 			$sql1  = "select invoice_id, invoice.CUSTNUM, invoice.ORDERNO, invoice.MERCH as MERCH ";
-			$sql1 .=        ", cust.SALES_ID ";
-			$sql1 .=        ", replace(convert(varchar, invoice.PAID_DATE, 10), '-', '/') as PAID_DATE ";
+			$sql1 .=        ", cust.SALES_ID, invoice.PAID_DATE ";
 			$sql1 .=        ", ltrim(rtrim(cust.FIRSTNAME)) + ' ' + ltrim(rtrim(cust.LASTNAME)) as NAME ";
-			$sql1 .=        ", momuser.COMMGROSS as RATE ";
-			$sql1 .=        ", round(invoice.MERCH*momuser.COMMGROSS/100,2) as COMMISSION ";
+			$sql1 .=        ", case when momuser.COMMGROSS IS NULL then 0 ELSE momuser.COMMGROSS end as RATE ";
+			$sql1 .=        ", invoice.MERCH*momuser.COMMGROSS/100 as COMMISSION ";	
 			$sql1 .=        ", ltrim(rtrim(MOMUSER.NAME)) as SALESPERSON ";
 			$sql1 .= "from INVOICE ";
 			$sql1 .= "inner join CUST    on invoice.custnum=cust.custnum ";
@@ -100,10 +99,13 @@
 			$sql1 .=   "and invoice.PAID_DATE > '{$start_date}' and invoice.PAID_DATE < '{$end_date}' ";
 			$sql1 .=   "and invoice.MERCH<>0 ";
 
+
 			$sql  = "select temp.invoice_id, temp.CUSTNUM as 'Cust ID', temp.ORDERNO as 'Order', temp.Merch ";
-			$sql .=         ", temp.SALES_ID as 'Sales ID', invoice.PAID_DATE as 'Paid', Name ";
-			$sql .=         ", case when RATE IS NULL then 0 ELSE Rate/100 END as 'Rate' ";
-			$sql .=         ", case when commission is null then 0 else round(Commission,2) end as 'Comm' ";
+			$sql .=         ", temp.SALES_ID as 'Sales ID' "; 
+			$sql .=         ", replace(convert(varchar, invoice.PAID_DATE, 10), '-', '/') as 'Paid' ";
+			$sql .=         ", Name ";
+			$sql .=         ", RATE as 'Rate' ";
+			$sql .=         ", COMMISSION as 'Comm' ";
 			$sql .=         ", case when SALESPERSON is null then '' else salesperson end as 'Sales Person' ";
 			$sql .= "from INVOICE ";
 			$sql .= "JOIN ( ";
