@@ -27,7 +27,7 @@
     $rows = $db->query_db($sql);
 
     $row_count = $db->num_rows ( $stmt );
-    $fp = fopen('file.csv', 'w');
+    $fp = fopen('file.csv', 'w')or die("Unable to open file file.csv!");
 
     foreach($rows as $row){
         $sql = "select item from items join cms on cms.orderno=items.orderno where cms.custnum=" . $row['custnum'] . " group by item ";

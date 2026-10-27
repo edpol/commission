@@ -1,9 +1,5 @@
 <?php
-
-defined('DBi_SERVER') ? null : define("DBi_SERVER", "localhost");
-defined('DBi_USER')   ? null : define("DBi_USER", "payroll");
-defined('DBi_PASS')   ? null : define("DBi_PASS", "Mdr33325");
-defined('DBi_NAME')   ? null : define("DBi_NAME", "commission");
+require_once(LIB_PATH.DS."config.php");
 
 class MySQLDatabase {
 
@@ -32,8 +28,8 @@ class MySQLDatabase {
 	}
 
 	public function open_connection() {
-/*	echo "Server ".DBi_SERVER."<br />User ".DBi_USER."<br />Password ".DBi_PASS."<br />Database ".DBi_NAME."<br />"; */
-		$this->my_conn = mysqli_connect(DBi_SERVER,DBi_USER,DBi_PASS,DBi_NAME);
+/*	echo "Server ".MYSQLI_SERVER."<br />User ".MYSQLI_USER."<br />Password ".MYSQLI_PASS."<br />Database ".MYSQLI_NAME."<br />"; */
+		$this->my_conn = mysqli_connect(MYSQLI_SERVER,MYSQLI_USER,MYSQLI_PASS,MYSQLI_NAME);
 		if (!$this->my_conn) {
 			die("Database connection failed: " . mysqli_connect_error() . " (" . mysqli_connect_errno() . ")");
 		}

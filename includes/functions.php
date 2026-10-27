@@ -122,15 +122,15 @@
 	/*
 	 * output report the word format file
 	 */
-	function print_report($db, $rows, $count) {
+	function print_word($db, $rows1, $rows2, $count) {
 		global $line_count, $previous_SALESPERSON, $max_lines, $commission_total, $sales_total;
 
 		$file = getcwd()."/temp/report.doc";
 		//echo "dir : " . __DIR__ . "<br />";
 		//echo "File : " . $file . "<br />";
 
-		$sql = "select * ";
-		$sql .= "from #commission_table order by sales_id, inv_date ";
+		//$sql = "select * ";
+		//$sql .= "from #commission_table order by sales_id, inv_date ";
 		//$stmt = $db->query($sql);
 
 		$count == 1 ? $access = "w" : $access = "a";
@@ -138,7 +138,7 @@
 		$line_count = 0;
 		$previous_SALESPERSON = '';
 
-		foreach($rows as $row) {
+		foreach($rows1 as $row) {
 			//	Next Sales Person
 			if (($row['Sales ID'] <> $previous_SALESPERSON) && ($line_count>0)){
 				print_footer("A",$db,$myfile,true);
@@ -152,6 +152,7 @@
 			if ($line_count>=$max_lines) {print_footer("B",$db,$myfile);}
 		}
 		if ($line_count<$max_lines) {print_footer("C",$db,$myfile,true);}
+		print_totals($db,$rows2,$myfile);
 		if ($count == 2) {fclose($myfile);}	// if you add another company, this has to be changed
 	}
 
@@ -175,7 +176,7 @@
 			$line .= sprintf('%11.2f ' , $row['COMMISSION']);
 			$line .= "   " . $row["SALESPERSON"];
 			writeln($myfile, $line);
-			$commission_total += $row['COMMISSION']; 
+			$commission_total += round((float)$row['COMMISSION'],2); 
 			$sales_total += $row['TOTAL_SALES'];
 		}
 		$line = str_repeat(" ",10) . sprintf('%9.2f ' , $sales_total) . ' ' . sprintf('%10.2f ' , $commission_total);
@@ -185,6 +186,7 @@
 
 	function print_row($myfile,$row) {
 		global $commission_total, $commission_page, $sales_total, $sales_page;
+		$row['Comm'] = round((float)$row['Comm'],2);  // could have sql do this
 		$line  = sprintf('%7d '   , $row['Cust ID']);
 		$line .= sprintf('%6d '   , $row['Order']);
 		$line .= sprintf('%7.2f ' , $row['Merch']);

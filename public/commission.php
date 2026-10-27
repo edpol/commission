@@ -114,22 +114,33 @@
 			$sql .= "on temp.invoice_id=invoice.invoice_id ";
 			$sql .= "where salesperson <> '' ";
 
-			$rows = $db->query_db($sql . "order by SALESPERSON ");
+			$rows1 = $db->query_db($sql . "order by SALESPERSON ");
 
-			$row_count = $db->num_rows ( $rows );
+			$row_count = $db->num_rows ( $rows1 );
 			if ($row_count === false || $row_count == 0) { 
 				die("No Activity " . $go_back); 
 			}
 
-			print_selected($rows, $db, $csvfile);
+			print_selected($rows1, $db, $csvfile);
+	
+			$sql  = "select cust.SALES_ID as 'SALES_ID', sum(invoice.merch) as 'TOTAL_SALES', "; 
+			$sql .= "round(sum(invoice.merch*momuser.COMMGROSS/100),2) as COMMISSION, ";
+			$sql .= "ltrim(rtrim(MOMUSER.NAME)) as SALESPERSON ";
+			$sql .= "from INVOICE ";
+			$sql .= "inner join CUST   on invoice.custnum=cust.custnum "; 
+			$sql .= "left join momuser on momuser.CODE=cust.SALES_ID ";
+			$sql .= "where invoice.PAID=1 ";
+			$sql .= "  and invoice.PAID_DATE > '{$start_date}' and invoice.PAID_DATE < '{$end_date}' ";
+			$sql .= "  and invoice.MERCH<>0 ";
+			$sql .= "group by cust.sales_id, MOMUSER.NAME ";
+			$rows2 = $db->query_db($sql . "order by cust.SALES_ID ");
 
-			$rows = $db->query_db($sql . "order by SALES_ID, invoice.PAID_DATE ");
-			print_selected($rows, $db, $csvfile);
-	    
-			print_report($db, $rows, ++$count);
+			print_selected($rows2, $db, $csvfile);
+	
+			print_word($db, $rows1, $rows2, ++$count);
 
-            		//$db->free_stmt( $stmt );
-            		$db->close_connection ();
+			//$db->free_stmt( $stmt );
+			$db->close_connection ();
 
 /**********************************************************************************/
 		}

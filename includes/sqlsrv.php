@@ -15,11 +15,10 @@ class sqlsrv {
 	 */
    	public function open_connection($db){
 		try{
-			$this->connection = new PDO("sqlsrv:Server=".DB_SERVER.",".DB_PORT."; Database=$db", DB_USER, DB_PASS);
+			$this->connection = new PDO("sqlsrv:Server=".MOM_SERVER.",".MOM_PORT."; Database=$db", MOM_USER, MOM_PASS);
 			$this->connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
 		}
-		catch(PDOException $e)
-		{
+		catch(PDOiException $e){
 			echo "Connection failed: " . $e->getMessage();
 		}
 	}
@@ -28,9 +27,9 @@ class sqlsrv {
 			die("Function sqlsrv_connect does not exist");
 		}		
 		
-		$connectionInfo = array( "Database"=>$db, "UID"=>DB_USER, "PWD"=>DB_PASS, 'ReturnDatesAsStrings'=>true, "CharacterSet"=>'utf-8');
+		$connectionInfo = array( "Database"=>$db, "UID"=>MOM_USER, "PWD"=>MOM_PASS, 'ReturnDatesAsStrings'=>true, "CharacterSet"=>'utf-8');
 
-		$this->connection = sqlsrv_connect( DB_SERVER, $connectionInfo);
+		$this->connection = sqlsrv_connect( MOM_SERVER, $connectionInfo);
 
 		if ( $this->connection ) {
 			$x = "Connection to {$db} established.<br />";
