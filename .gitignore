@@ -1,4 +1,4 @@
 public/test/
 public/temp/
 includes/config.php
-
+.DS_Store
